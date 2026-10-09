@@ -29,7 +29,13 @@ dependencies {
     api "gg.moonflower:molang-compiler:${molang_compiler_version}"
     api "io.github.ocelot:glsl-processor:${glsl_processor_version}"
 
-    compileOnly "foundry.imguimc:imguimc-common-${minecraft_version}:$imguimc_version"
+    // PORT TODO (26.3): disabled - CI confirmed imguimc-fabric-26.3:2.0.5 (the
+    // version pinned on FoundryMC/imguimc's own "26.3" branch) 404s: a source
+    // branch existing upstream doesn't mean it was ever actually published to
+    // maven.ryanhcode.dev. The common artifact likely has the same problem -
+    // disabled preemptively rather than burning another CI round to confirm.
+    // Re-enable once real published artifacts are found.
+    // compileOnly "foundry.imguimc:imguimc-common-${minecraft_version}:$imguimc_version"
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testImplementation 'org.joml:joml:1.10.5'

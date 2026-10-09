@@ -70,5 +70,9 @@ dependencies {
     include(api("gg.moonflower:molang-compiler:${molang_compiler_version}"))
     include(api("io.github.ocelot:glsl-processor:${glsl_processor_version}"))
 
-    compileOnly "foundry.imguimc:imguimc-fabric-${minecraft_version}:$imguimc_version"
+    // PORT TODO (26.3): disabled - CI confirmed imguimc-fabric-26.3:2.0.5 (the
+    // version pinned on FoundryMC/imguimc's own "26.3" branch) 404s: a source
+    // branch existing upstream doesn't mean it was ever actually published to
+    // maven.ryanhcode.dev. Re-enable once a real published artifact is found.
+    // compileOnly "foundry.imguimc:imguimc-fabric-${minecraft_version}:$imguimc_version"
 }

@@ -67,22 +67,23 @@ much bigger issue than a missing version number:
   underlying ModDevGradle change, and 26.3 is well past 1.21.11) by dropping
   the `additionalRuntimeClasspath(...)` wrapper in `neoforge/build.gradle`'s
   `jarJar(api(...))` calls and depending directly.
-- **`imguimc_version` and `fabric_loader_version` corrected against a real
-  sibling project.** A CI failure (`Could not find
+- **`imguimc` is disabled entirely for 26.3 - no confirmed published build on
+  either loader.** A CI failure (`Could not find
   foundry.imguimc:imguimc-fabric-26.3:2.0.0`) led to directly cloning
   `FoundryMC/imguimc` (the upstream ImGuiMC library Veil optionally compiles
-  against) and checking its own `26.3` branch: `imguimc_version` is now
-  `2.0.5` (confirmed artifact) and `fabric_loader_version` is now `0.19.3`
-  (that branch's own pin - more authoritative than the earlier blog-sourced
-  guess). That same inspection showed imguimc has **no NeoForge build for
-  26.3 at all yet** (no `neoforge/versions/26.3` directory upstream, Fabric
-  support only), so the `imguimc` compileOnly dependency in
-  `neoforge/build.gradle` is disabled until that exists. It's a genuinely
-  optional dependency - no source in `neoforge/` or `common/` imports the
-  external `foundry.imguimc` package directly, so this is safe.
-- Worth flagging: imguimc's own `26.3` branch targets a *pre-release
-  snapshot* (`26.3-snapshot-6`), not the final release, and its Fabric
-  `mod.mc_dep` range (`>26.2 <26.3`) technically excludes the final 26.3.
+  against) and checking its own `26.3` branch, which gave `imguimc_version
+  2.0.5` and a more authoritative `fabric_loader_version` (`0.19.3`, replacing
+  an earlier blog-sourced guess of `0.19.5`). But a second CI run showed
+  `imguimc-fabric-26.3:2.0.5` *also* 404s - a source branch existing upstream
+  doesn't mean it was ever actually published to maven.ryanhcode.dev (that
+  branch's own version pins target a pre-release snapshot, `26.3-snapshot-6`,
+  and may just never have been built/released). The `imguimc` compileOnly
+  dependency is now disabled in all three subprojects (`common`, `fabric`,
+  `neoforge`) - NeoForge has no imguimc support for 26.3 at all upstream
+  (no `neoforge/versions/26.3` directory), and Fabric/common's published
+  artifacts couldn't be confirmed either. It's a genuinely optional
+  dependency - no source in `common/`, `fabric/`, or `neoforge/` imports the
+  external `foundry.imguimc` package directly, so disabling it is safe.
   It may not actually be current/correct either - treat its values as a
   helpful cross-reference, not gospel.
 
