@@ -65,7 +65,11 @@ dependencies {
     jarJar(api("gg.moonflower:molang-compiler:$molang_compiler_version"))
     jarJar(api("io.github.ocelot:glsl-processor:${glsl_processor_version}"))
 
-    compileOnly "foundry.imguimc:imguimc-neoforge-${minecraft_version}:$imguimc_version"
+    // PORT TODO (26.3): disabled - confirmed by directly inspecting
+    // FoundryMC/imguimc's "26.3" branch at port time that it has no
+    // neoforge/versions/26.3 directory at all (Fabric-only so far). Re-enable
+    // once a NeoForge build for 26.3 exists upstream.
+    // compileOnly "foundry.imguimc:imguimc-neoforge-${minecraft_version}:$imguimc_version"
 
     compileOnly "net.caffeinemc:sodium-neoforge-mod:${sodium_version}"
     // PORT TODO (26.3): no Iris build for NeoForge 26.3 was confirmed to exist

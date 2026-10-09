@@ -67,13 +67,30 @@ much bigger issue than a missing version number:
   underlying ModDevGradle change, and 26.3 is well past 1.21.11) by dropping
   the `additionalRuntimeClasspath(...)` wrapper in `neoforge/build.gradle`'s
   `jarJar(api(...))` calls and depending directly.
+- **`imguimc_version` and `fabric_loader_version` corrected against a real
+  sibling project.** A CI failure (`Could not find
+  foundry.imguimc:imguimc-fabric-26.3:2.0.0`) led to directly cloning
+  `FoundryMC/imguimc` (the upstream ImGuiMC library Veil optionally compiles
+  against) and checking its own `26.3` branch: `imguimc_version` is now
+  `2.0.5` (confirmed artifact) and `fabric_loader_version` is now `0.19.3`
+  (that branch's own pin - more authoritative than the earlier blog-sourced
+  guess). That same inspection showed imguimc has **no NeoForge build for
+  26.3 at all yet** (no `neoforge/versions/26.3` directory upstream, Fabric
+  support only), so the `imguimc` compileOnly dependency in
+  `neoforge/build.gradle` is disabled until that exists. It's a genuinely
+  optional dependency - no source in `neoforge/` or `common/` imports the
+  external `foundry.imguimc` package directly, so this is safe.
+- Worth flagging: imguimc's own `26.3` branch targets a *pre-release
+  snapshot* (`26.3-snapshot-6`), not the final release, and its Fabric
+  `mod.mc_dep` range (`>26.2 <26.3`) technically excludes the final 26.3.
+  It may not actually be current/correct either - treat its values as a
+  helpful cross-reference, not gospel.
 
 ## Still unverified / best-effort
 
-- `gradle.properties`: `minecraft_version_range`, `fabric_loader_version`,
-  `neoforge_version`, `neoforge_version_range`, `sodium_version` are
-  best-available values found via web search, not verified against
-  authoritative Maven metadata.
+- `gradle.properties`: `minecraft_version_range`, `neoforge_version`,
+  `neoforge_version_range`, `sodium_version` are best-available values found
+  via web search, not verified against authoritative Maven metadata.
 - `common/build.gradle`, `fabric/build.gradle`, `neoforge/build.gradle`: the
   Parchment mappings overlay is disabled (commented out) because 26.3 is too
   new for a Parchment release to exist yet, and because Mappings aren't
