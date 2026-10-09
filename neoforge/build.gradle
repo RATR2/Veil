@@ -10,10 +10,13 @@ neoForge {
     if (at.exists()) {
         accessTransformers.from(at.absolutePath)
     }
-    parchment {
-        minecraftVersion = parchment_minecraft
-        mappingsVersion = parchment_version
-    }
+    // PORT TODO (1.21.11): Parchment mappings for 1.21.11 were not confirmed to
+    // exist from this environment (network access to maven.parchmentmc.org is
+    // blocked here). Re-enable once a release is confirmed - see gradle.properties.
+    // parchment {
+    //     minecraftVersion = parchment_minecraft
+    //     mappingsVersion = parchment_version
+    // }
     runs {
         configureEach {
             systemProperty('neoforge.enabledGameTestNamespaces', mod_id)
@@ -59,12 +62,17 @@ dependencies {
     compileOnly "foundry.imguimc:imguimc-neoforge-${minecraft_version}:$imguimc_version"
 
     compileOnly "net.caffeinemc:sodium-neoforge-mod:${sodium_version}"
-    compileOnly "maven.modrinth:iris:1.8.8+1.21.1-neoforge"
+    // PORT TODO (1.21.11): best value found via web search at port time
+    // (Iris 1.10.6 was the newest listed for 1.21.11 neoforge); verify on Modrinth.
+    compileOnly "maven.modrinth:iris:1.10.6+1.21.11-neoforge"
 //    compileOnly "maven.modrinth:tacz-1.21.1:1.1.7-hotfix-r3"
 //    runtimeOnly "net.caffeinemc:sodium-neoforge:${sodium_version}"
 //    runtimeOnly "maven.modrinth:iris:1.8.8+1.21.1-neoforge"
 //    runtimeOnly "maven.modrinth:tacz-1.21.1:1.1.7-hotfix-r3"
 
     // Allows sodium compat to compile properly
+    // PORT TODO (1.21.11): version below is stale (pinned to 1.21.1). No 1.21.11
+    // build was confirmed to exist via web search at port time - check
+    // https://maven.su5ed.dev/releases (group dev.su5ed.sinytra) before building.
     compileOnly "org.sinytra.forgified-fabric-api:forgified-fabric-api:0.104.0+2.0.19+1.21.1"
 }
