@@ -73,19 +73,22 @@ repositories {
         }
     }
     // PORT NOTE (26.3): FoundryMC/imguimc has no published Maven artifact for
-    // 26.3 (its "26.3" branch exists and builds, confirmed via its own CI,
-    // but was never run through its manual-trigger release workflow). Using
-    // JitPack to build that exact commit on demand instead - see the
-    // dependency declarations in common/build.gradle and fabric/build.gradle.
+    // 26.3 on the real RyanHCode Maven above (its "26.3" branch exists and
+    // builds, confirmed via its own CI, but was never run through its
+    // manual-trigger release workflow), and a JitPack build of that commit
+    // failed too. Falls back to a maven-layout-in-git repo, built and pushed
+    // manually from a local machine with real network access - see
+    // https://github.com/RATR2/imguimc/tree/maven-repo and the dependency
+    // declarations in common/build.gradle and fabric/build.gradle.
     exclusiveContent {
         forRepository {
             maven {
-                name = "JitPack"
-                url = "https://jitpack.io"
+                name = "imguimc 26.3 (manually built, hosted as git-raw)"
+                url = "https://raw.githubusercontent.com/RATR2/imguimc/maven-repo/"
             }
         }
         filter {
-            includeGroupAndSubgroups("com.github.FoundryMC")
+            includeGroup("foundry.imguimc")
         }
     }
     exclusiveContent { // ImGuiMC

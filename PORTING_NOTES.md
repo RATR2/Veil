@@ -67,36 +67,35 @@ much bigger issue than a missing version number:
   underlying ModDevGradle change, and 26.3 is well past 1.21.11) by dropping
   the `additionalRuntimeClasspath(...)` wrapper in `neoforge/build.gradle`'s
   `jarJar(api(...))` calls and depending directly.
-- **`imguimc` has no published Maven artifact for 26.3 on any loader, and
-  JitPack can't build it either - disabled, needs a different hosting
-  solution.** A CI failure (`Could not find
-  foundry.imguimc:imguimc-fabric-26.3:2.0.0`) led to directly cloning
-  `FoundryMC/imguimc` (the upstream ImGuiMC library Veil optionally compiles
-  against) and checking its own `26.3` branch (commit `86d6fa3`,
-  "Add 26.3 support"), which gave `imguimc_version 2.0.5` and a more
-  authoritative `fabric_loader_version` (`0.19.3`, replacing an earlier
-  blog-sourced guess of `0.19.5`). A second CI run showed
-  `imguimc-fabric-26.3:2.0.5` *also* 404s - checking that commit's own CI run
-  on GitHub confirmed the branch's `build` workflow passes (source compiles
-  fine), but its `release` workflow (the one that actually publishes to
-  Maven/Modrinth/CurseForge) is manual-trigger-only and has 24 recorded runs,
-  every one on `main` - none for `26.3`. So the branch was never actually
-  released. Tried depending on that exact commit via JitPack instead
-  (`com.github.FoundryMC.imguimc:{common,fabric}:86d6fa3e40...`, added as a
-  repository in `buildSrc/.../multiloader-common.gradle`) - a third CI run
-  showed JitPack's own build of it fails too (generic "Build failed", no
-  detailed log reachable), most likely because this project's
-  Stonecutter/Loom/ModDevGradle toolchain is more than JitPack's generic
-  build environment handles. Reverted to disabled in both `common` and
-  `fabric` (the JitPack repository entry is left in place since it's
-  harmless and may be useful again). NeoForge still has no imguimc support
-  for 26.3 at all upstream (no `neoforge/versions/26.3` directory in source,
-  not just no publish). Next idea under discussion: build it locally (with
-  real network access) and host the resulting jar somewhere Veil's CI can
-  reach - either GitHub Packages or a plain Maven-layout-in-git repo. It's a
-  genuinely optional dependency either way - no source in `common/`,
-  `fabric/`, or `neoforge/` imports the external `foundry.imguimc` package
-  directly.
+- **`imguimc` resolved via a manually-built, manually-hosted Maven repo.**
+  No official publish exists for 26.3 on either loader (checked via its own
+  CI history - its `build` workflow passes on the `26.3` branch, but
+  `release`, the one that actually publishes to Maven/Modrinth/CurseForge,
+  is manual-trigger-only and all 24 recorded runs are on `main`). A JitPack
+  build of that exact commit (`86d6fa3`, "Add 26.3 support") was tried next
+  and also failed (generic "Build failed", no detailed log reachable) -
+  likely this project's Stonecutter/Loom/ModDevGradle toolchain is more than
+  JitPack's generic build environment handles. The working fix: built it on
+  a real machine with real network access (`./gradlew :fabric:26.3:publishToMavenLocal`
+  and the `:common:26.3` equivalent, run under a JDK 21/25 - the Gradle
+  daemon itself can't run on JDK 27, a separate problem from the project's
+  own Java 25 toolchain target), then pushed the resulting
+  `~/.m2/repository/foundry/imguimc/...` tree to a `maven-repo` branch of
+  `https://github.com/RATR2/imguimc` (a fork, since the upstream repo can't
+  be pushed to). `buildSrc/.../multiloader-common.gradle` now points at
+  `https://raw.githubusercontent.com/RATR2/imguimc/maven-repo/` for the
+  `foundry.imguimc` group, which serves the exact same coordinates
+  (`imguimc-{common,fabric}-26.3:2.0.5`) the build already expected - no
+  dependency-declaration changes needed, just a different repository.
+  NeoForge still has no imguimc support for 26.3 at all upstream (no
+  `neoforge/versions/26.3` directory in source, not just no publish), so it
+  stays disabled there. This whole dependency is genuinely optional either
+  way - no source in `common/`, `fabric/`, or `neoforge/` imports the
+  external `foundry.imguimc` package directly. Caveat: that `maven-repo`
+  branch is a manually-pushed, one-off snapshot, not a maintained feed - if
+  `imguimc_version` is ever bumped, it'll need to be rebuilt and re-pushed
+  the same way, or (better, once it exists) swapped for a real upstream
+  publish.
 - **Minecraft 26.3 renamed/moved the entire rendering API** from
   `com.mojang.blaze3d.*` to a new `com.mojang.renderpearl.*` package
   (`api`/`backend.opengl`/`backend.vulkan` subpackages) - confirmed directly
