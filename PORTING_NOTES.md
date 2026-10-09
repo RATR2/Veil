@@ -1,14 +1,33 @@
 # Porting notes: Minecraft 1.21.11
 
-This branch is a **config-only, unverified** port of Veil (from the 1.21.1
-baseline) to target Minecraft **1.21.11**. It updates build coordinates
-(Minecraft/Fabric/NeoForge/mapping/compat-mod versions) but **has not been
-compiled**, because this environment's network egress policy blocks every
+This branch is a port of Veil (from the 1.21.1 baseline) to target Minecraft
+**1.21.11**. The build config was originally written without being able to
+compile anything, because this dev sandbox's network policy blocks every
 host the build needs (`maven.fabricmc.net`, `maven.neoforged.net`,
 `libraries.minecraft.net`, `piston-meta.mojang.com`, `repo.spongepowered.org`,
-`maven.parchmentmc.org`, `maven.blamejared.com`, `maven.su5ed.dev`). Only
-Maven Central was reachable, so none of the Minecraft/Loom/NeoForge
-toolchain could be resolved here, let alone built against.
+`maven.parchmentmc.org`, `maven.blamejared.com`, `maven.su5ed.dev`) - only
+Maven Central was reachable there. A real `./gradlew build` run on GitHub
+Actions (which *can* reach those hosts) has since confirmed one real
+architecture issue and fixed it - see "Confirmed via CI" below.
+
+## Confirmed via CI
+
+A real CI build failed at configuration time in the `neoforge` subproject:
+`Tried to add a dependency to configuration ':neoforge:additionalRuntimeClasspath',
+but there is no additional classpath anymore for Minecraft 1.21.11. Add the
+dependency to a standard configuration such as implementation or
+runtimeOnly.` ModDevGradle's `additionalRuntimeClasspath` helper no longer
+exists starting with Minecraft 1.21.11. Fixed in `neoforge/build.gradle` by
+dropping that wrapper from the `jarJar(api(...))` calls and depending
+directly.
+
+The same CI run got the `fabric` subproject through configuration (using
+the `net.fabricmc.fabric-loom-remap` plugin, correct for 1.21.11 - it's
+still obfuscated, unlike 26.1+) with only non-fatal-looking warnings
+(`Failed to parse fabric.mod.json`, a block of `Cannot remap ... because it
+does not exist in any of the targets [...]` lines). The build never reached
+fabric's own build tasks before failing in `neoforge`, so those warnings
+haven't been chased down yet - watch the next CI run.
 
 ## What changed
 

@@ -56,8 +56,13 @@ repositories {
 }
 
 dependencies {
-    jarJar(api(additionalRuntimeClasspath("gg.moonflower:molang-compiler:$molang_compiler_version")))
-    jarJar(api(additionalRuntimeClasspath("io.github.ocelot:glsl-processor:${glsl_processor_version}")))
+    // PORT NOTE (1.21.11): confirmed via a real CI build of this port -
+    // ModDevGradle's `additionalRuntimeClasspath` config no longer exists
+    // starting with Minecraft 1.21.11 ("there is no additional classpath
+    // anymore for Minecraft 1.21.11"). Its own suggested fix is to depend via
+    // a standard configuration like `api`/`implementation` directly.
+    jarJar(api("gg.moonflower:molang-compiler:$molang_compiler_version"))
+    jarJar(api("io.github.ocelot:glsl-processor:${glsl_processor_version}"))
 
     compileOnly "foundry.imguimc:imguimc-neoforge-${minecraft_version}:$imguimc_version"
 
