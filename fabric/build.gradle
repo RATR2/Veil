@@ -28,9 +28,10 @@ dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.layered {
         officialMojangMappings()
-        // PORT TODO (1.21.11): Parchment mappings for 1.21.11 were not confirmed
-        // to exist from this environment. Re-enable once a release is confirmed.
-        // parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
+        // PORT NOTE (1.21.11): Parchment does have a 1.21.11 release -
+        // confirmed via the official NeoForgeMDKs/MDK-1.21.11-ModDevGradle
+        // template at port time (see gradle.properties). Re-enabled.
+        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
     }
 
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
