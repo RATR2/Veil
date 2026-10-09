@@ -22,7 +22,12 @@ dropping that wrapper from the `jarJar(api(...))` calls and depending
 directly.
 
 A second CI run got past that and much further, surfacing two more real
-issues plus the actual blocker this port can't config its way past:
+issues plus the actual blocker this port can't config its way past. A third
+run confirmed the fixes below actually work end-to-end: both
+`:common:createMinecraftArtifacts` and `:neoforge:createMinecraftArtifacts`
+now succeed, really downloading, merging, and renaming real Minecraft
+1.21.11 client/server jars via NeoForm. The *only* remaining failure in that
+run was `fabric:validateAccessWidener`.
 
 - **`net.neoforged:neoform:1.21.11-UNKNOWN-VERIFY` not found** - the
   placeholder this port originally left. Fixed by cloning
