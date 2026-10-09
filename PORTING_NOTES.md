@@ -67,25 +67,48 @@ much bigger issue than a missing version number:
   underlying ModDevGradle change, and 26.3 is well past 1.21.11) by dropping
   the `additionalRuntimeClasspath(...)` wrapper in `neoforge/build.gradle`'s
   `jarJar(api(...))` calls and depending directly.
-- **`imguimc` is disabled entirely for 26.3 - no confirmed published build on
-  either loader.** A CI failure (`Could not find
+- **`imguimc` has no published Maven artifact for 26.3 on any loader - now
+  resolved via JitPack instead.** A CI failure (`Could not find
   foundry.imguimc:imguimc-fabric-26.3:2.0.0`) led to directly cloning
   `FoundryMC/imguimc` (the upstream ImGuiMC library Veil optionally compiles
-  against) and checking its own `26.3` branch, which gave `imguimc_version
-  2.0.5` and a more authoritative `fabric_loader_version` (`0.19.3`, replacing
-  an earlier blog-sourced guess of `0.19.5`). But a second CI run showed
-  `imguimc-fabric-26.3:2.0.5` *also* 404s - a source branch existing upstream
-  doesn't mean it was ever actually published to maven.ryanhcode.dev (that
-  branch's own version pins target a pre-release snapshot, `26.3-snapshot-6`,
-  and may just never have been built/released). The `imguimc` compileOnly
-  dependency is now disabled in all three subprojects (`common`, `fabric`,
-  `neoforge`) - NeoForge has no imguimc support for 26.3 at all upstream
-  (no `neoforge/versions/26.3` directory), and Fabric/common's published
-  artifacts couldn't be confirmed either. It's a genuinely optional
-  dependency - no source in `common/`, `fabric/`, or `neoforge/` imports the
-  external `foundry.imguimc` package directly, so disabling it is safe.
-  It may not actually be current/correct either - treat its values as a
-  helpful cross-reference, not gospel.
+  against) and checking its own `26.3` branch (commit `86d6fa3`,
+  "Add 26.3 support"), which gave `imguimc_version 2.0.5` and a more
+  authoritative `fabric_loader_version` (`0.19.3`, replacing an earlier
+  blog-sourced guess of `0.19.5`). A second CI run showed
+  `imguimc-fabric-26.3:2.0.5` *also* 404s - checking that commit's own CI run
+  on GitHub confirmed the branch's `build` workflow passes (source compiles
+  fine), but its `release` workflow (the one that actually publishes to
+  Maven/Modrinth/CurseForge) is manual-trigger-only and has 24 recorded runs,
+  every one on `main` - none for `26.3`. So the branch was never actually
+  released. Rather than wait for that, `common/build.gradle` and
+  `fabric/build.gradle` now depend on
+  `com.github.FoundryMC.imguimc:{common,fabric}:86d6fa3e4014590da25a471addd64c1059859da1`
+  via JitPack (added as a repository in `buildSrc/.../multiloader-common.gradle`),
+  which builds that exact commit on demand. NeoForge still has no imguimc
+  support for 26.3 at all upstream (no `neoforge/versions/26.3` directory in
+  source, not just no publish), so it stays disabled there. PORT TODO:
+  unverified whether JitPack's multi-module convention (group
+  `com.github.<owner>.<repo>`, artifact = submodule name) actually matches
+  what this project's own `maven-publish` config produces - watch the next
+  CI run. It's a genuinely optional dependency either way - no source in
+  `common/`, `fabric/`, or `neoforge/` imports the external `foundry.imguimc`
+  package directly.
+- **Minecraft 26.3 renamed/moved the entire rendering API** from
+  `com.mojang.blaze3d.*` to a new `com.mojang.renderpearl.*` package
+  (`api`/`backend.opengl`/`backend.vulkan` subpackages) - confirmed directly
+  from that same imguimc commit's `stonecutter.gradle.kts`, which lists the
+  exact old-path -> new-path mapping it applies for `current.parsed >= "26.3"`
+  (covers buffers, pipeline, shaders/uniforms, vertex, textures, the OpenGL
+  and a new Vulkan backend). **This is a big deal for Veil specifically**:
+  152 of Veil's own source files import `com.mojang.blaze3d.*` directly.
+  Several of those imports (`Uniform`, `Program`, `Shader`, `EffectProgram`,
+  `ProgramManager`, `GlStateManager`) aren't in imguimc's rename list at all,
+  meaning they were likely already replaced by the `RenderPipeline` system
+  before 26.3 (matching the real `fabric:validateAccessWidener` errors seen
+  while porting the sibling `1.21.11` branch, against those same classes).
+  So Veil's 26.3 port has the same core blocker as 1.21.11, *plus* this
+  additional package rename on top. Not attempted here - see "What was not
+  attempted" below.
 
 ## Still unverified / best-effort
 
