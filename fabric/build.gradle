@@ -70,12 +70,13 @@ dependencies {
     include(api("gg.moonflower:molang-compiler:${molang_compiler_version}"))
     include(api("io.github.ocelot:glsl-processor:${glsl_processor_version}"))
 
-    // PORT NOTE (26.3): no published Maven artifact exists for imguimc-fabric
-    // on 26.3 (its "26.3" branch builds - confirmed via its own CI run - but
-    // was never run through the manual release workflow upstream). Built on
-    // demand via JitPack from the exact commit that added 26.3 support
-    // instead - PORT TODO: unverified whether JitPack's multi-module Gradle
-    // convention (group com.github.<owner>.<repo>, artifact = submodule name)
-    // matches what this build actually publishes; watch the next CI run.
-    compileOnly "com.github.FoundryMC.imguimc:fabric:86d6fa3e4014590da25a471addd64c1059859da1"
+    // PORT TODO (26.3): disabled. No published Maven artifact exists for
+    // imguimc-fabric on 26.3 (its "26.3" branch builds - confirmed via its
+    // own CI run - but was never run through the manual release workflow
+    // upstream). Tried building that exact commit on demand via JitPack
+    // instead - CI confirmed JitPack's own build of it fails too (generic
+    // "Build failed" with no detailed log available), so that route is a
+    // dead end, not just unverified. Re-enable (on whichever repo actually
+    // ends up serving it) once a real build exists.
+    // compileOnly "com.github.FoundryMC.imguimc:fabric:86d6fa3e4014590da25a471addd64c1059859da1"
 }
