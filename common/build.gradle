@@ -10,10 +10,13 @@ neoForge {
     if (at.exists()) {
         accessTransformers.from(at.absolutePath)
     }
-    parchment {
-        minecraftVersion = parchment_minecraft
-        mappingsVersion = parchment_version
-    }
+    // PORT TODO (26.3): Parchment mappings for 26.3 are too recent to have been
+    // confirmed from this environment (network access to maven.parchmentmc.org
+    // is blocked here). Re-enable once a release is confirmed - see gradle.properties.
+    // parchment {
+    //     minecraftVersion = parchment_minecraft
+    //     mappingsVersion = parchment_version
+    // }
 }
 
 dependencies {

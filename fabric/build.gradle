@@ -28,7 +28,9 @@ dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.layered {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
+        // PORT TODO (26.3): Parchment mappings for 26.3 are too recent to have
+        // been confirmed from this environment. Re-enable once a release is confirmed.
+        // parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
     }
 
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
@@ -44,9 +46,16 @@ dependencies {
     implementation 'org.jetbrains:annotations:24.0.1'
 
     modCompileOnly "net.caffeinemc:sodium-fabric:${sodium_version}"
-    modCompileOnly "maven.modrinth:iris:1.8.8+1.21.1-fabric"
+    // PORT TODO (26.3): best value found via web search at port time
+    // (Iris 1.11.7+26.3 was the newest Fabric build listed); verify on Modrinth.
+    modCompileOnly "maven.modrinth:iris:1.11.7+26.3-fabric"
+    // PORT TODO (26.3): version below is stale (pinned to 1.21.x) and not
+    // confirmed to exist for 26.3 - check Modrinth for the correct build.
     modCompileOnly "maven.modrinth:replaymod:1.21-2.6.20"
+    // PORT TODO (26.3): not confirmed compatible with 26.3 - verify on Modrinth.
     modCompileOnly "maven.modrinth:flashback:0.32.0"
+    // PORT TODO (26.3): version below is stale (pinned to 1.21.1) and not
+    // confirmed to exist for 26.3 - check Modrinth for the correct build.
     modCompileOnly "maven.modrinth:cameratweaks:1.7.0-1.21.1"
 //    modCompileOnly "maven.modrinth:yacl:3.6.3+1.21.1-fabric"
 
