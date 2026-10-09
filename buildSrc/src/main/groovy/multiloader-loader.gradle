@@ -51,14 +51,12 @@ publishMods {
 
     type = STABLE
 
-    if (isFabric) {
-        file = remapJar.archiveFile
-        additionalFiles.from(jar.archiveFile)
-        additionalFiles.from(sourcesJar.archiveFile)
-    } else {
-        file = jar.archiveFile
-        additionalFiles.from(sourcesJar.archiveFile)
-    }
+    // PORT NOTE (26.3): the fabric subproject no longer has a `remapJar` task.
+    // Minecraft 26.x ships unobfuscated, so this branch's fabric subproject
+    // uses Loom's non-remap plugin (see fabric/build.gradle), which produces
+    // the final artifact straight from the normal `jar` task - same as neoforge.
+    file = jar.archiveFile
+    additionalFiles.from(sourcesJar.archiveFile)
 
     changelog = changelogFile.text
 

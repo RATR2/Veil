@@ -12,7 +12,9 @@ pluginManagement {
             filter {
                 includeGroup('net.fabricmc')
                 includeGroup('net.fabricmc.unpick')
-                includeGroup('net.fabricmc.fabric-loom-remap')
+                // PORT NOTE (26.3): this branch uses the non-remap Loom plugin
+                // (see build.gradle) since Minecraft 26.x is unobfuscated.
+                includeGroup('net.fabricmc.fabric-loom')
             }
         }
         exclusiveContent {

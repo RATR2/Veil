@@ -1,5 +1,5 @@
 plugins {
-    id 'net.fabricmc.fabric-loom-remap'
+    id 'net.fabricmc.fabric-loom'
     id 'multiloader-loader'
 }
 
@@ -26,51 +26,49 @@ loom {
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings loom.layered {
-        officialMojangMappings()
-        // PORT TODO (26.3): Parchment mappings for 26.3 are too recent to have
-        // been confirmed from this environment. Re-enable once a release is confirmed.
-        // parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
-    }
+    // PORT NOTE (26.3): no `mappings` block - Minecraft 26.x ships unobfuscated
+    // (no more Mojang-mappings/Parchment remapping layer), confirmed against
+    // FabricMC/fabric-loom's own no-remap test fixtures at port time.
 
-    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
-//    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
-    modImplementation fabricApi.module("fabric-registry-sync-v0", project.fabric_version)
-    modImplementation fabricApi.module("fabric-lifecycle-events-v1", project.fabric_version)
-    modImplementation fabricApi.module("fabric-resource-loader-v0", project.fabric_version)
-    modImplementation fabricApi.module("fabric-networking-api-v1", project.fabric_version)
-    modImplementation fabricApi.module("fabric-command-api-v2", project.fabric_version)
-    modImplementation fabricApi.module("fabric-key-binding-api-v1", project.fabric_version)
-    modImplementation fabricApi.module("fabric-rendering-v1", project.fabric_version)
-    modImplementation fabricApi.module("fabric-renderer-api-v1", project.fabric_version)
+    // PORT NOTE (26.3): under the non-remap Loom plugin, mod dependencies use
+    // plain `implementation`/`compileOnly`, not `modImplementation`/
+    // `modCompileOnly` - confirmed against FabricMC/fabric-loom's
+    // UnobfFabricAPITest fixture at port time.
+    implementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    // PORT NOTE (26.3): the no-remap test fixture depends on the single
+    // monolithic `fabric-api` artifact rather than per-module fabricApi.module()
+    // calls; whether per-module artifacts are still published for the
+    // unobfuscated line wasn't confirmed, so this uses the safer, confirmed
+    // form. Re-split into individual modules if/when that's verified.
+    implementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
     implementation 'org.jetbrains:annotations:24.0.1'
 
-    modCompileOnly "net.caffeinemc:sodium-fabric:${sodium_version}"
+    compileOnly "net.caffeinemc:sodium-fabric:${sodium_version}"
     // PORT TODO (26.3): best value found via web search at port time
     // (Iris 1.11.7+26.3 was the newest Fabric build listed); verify on Modrinth.
-    modCompileOnly "maven.modrinth:iris:1.11.7+26.3-fabric"
+    compileOnly "maven.modrinth:iris:1.11.7+26.3-fabric"
     // PORT TODO (26.3): version below is stale (pinned to 1.21.x) and not
     // confirmed to exist for 26.3 - check Modrinth for the correct build.
-    modCompileOnly "maven.modrinth:replaymod:1.21-2.6.20"
+    compileOnly "maven.modrinth:replaymod:1.21-2.6.20"
     // PORT TODO (26.3): not confirmed compatible with 26.3 - verify on Modrinth.
-    modCompileOnly "maven.modrinth:flashback:0.32.0"
+    compileOnly "maven.modrinth:flashback:0.32.0"
     // PORT TODO (26.3): version below is stale (pinned to 1.21.1) and not
     // confirmed to exist for 26.3 - check Modrinth for the correct build.
-    modCompileOnly "maven.modrinth:cameratweaks:1.7.0-1.21.1"
-//    modCompileOnly "maven.modrinth:yacl:3.6.3+1.21.1-fabric"
+    compileOnly "maven.modrinth:cameratweaks:1.7.0-1.21.1"
+//    compileOnly "maven.modrinth:yacl:3.6.3+1.21.1-fabric"
 
-//    modRuntimeOnly "maven.modrinth:modmenu:11.0.3"
-//    modRuntimeOnly "maven.modrinth:sodium:mc1.21.1-${sodium_version}-fabric"
-//    modRuntimeOnly "maven.modrinth:iris:1.8.8+1.21.1-fabric"
-//    modRuntimeOnly "maven.modrinth:replaymod:1.21-2.6.20"
-//    modRuntimeOnly "maven.modrinth:flashback:0.32.0"
-//    modRuntimeOnly "maven.modrinth:cameratweaks:1.7.0-1.21.1"
-//    modRuntimeOnly "maven.modrinth:yacl:3.6.3+1.21.1-fabric"
-//    modRuntimeOnly "maven.modrinth:aaa-particles:fabric-1.21-1.4.12"
-//    modRuntimeOnly "maven.modrinth:architectury-api:13.0.8+fabric"
+//    runtimeOnly "maven.modrinth:modmenu:11.0.3"
+//    runtimeOnly "maven.modrinth:sodium:mc1.21.1-${sodium_version}-fabric"
+//    runtimeOnly "maven.modrinth:iris:1.8.8+1.21.1-fabric"
+//    runtimeOnly "maven.modrinth:replaymod:1.21-2.6.20"
+//    runtimeOnly "maven.modrinth:flashback:0.32.0"
+//    runtimeOnly "maven.modrinth:cameratweaks:1.7.0-1.21.1"
+//    runtimeOnly "maven.modrinth:yacl:3.6.3+1.21.1-fabric"
+//    runtimeOnly "maven.modrinth:aaa-particles:fabric-1.21-1.4.12"
+//    runtimeOnly "maven.modrinth:architectury-api:13.0.8+fabric"
 
     include(api("gg.moonflower:molang-compiler:${molang_compiler_version}"))
     include(api("io.github.ocelot:glsl-processor:${glsl_processor_version}"))
 
-    modCompileOnly "foundry.imguimc:imguimc-fabric-${minecraft_version}:$imguimc_version"
+    compileOnly "foundry.imguimc:imguimc-fabric-${minecraft_version}:$imguimc_version"
 }
