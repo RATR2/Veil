@@ -61,32 +61,29 @@ repositories {
         name = 'BlameJared'
         url = 'https://maven.blamejared.com'
     }
-    exclusiveContent { // ImGuiMC
-        forRepository {
-            maven {
-                url = "https://maven.ryanhcode.dev/releases"
-                name = "RyanHCode Maven"
-            }
-        }
-        filter {
-            includeGroup("foundry.imguimc")
-        }
-    }
     // PORT NOTE (26.3): FoundryMC/imguimc has no published Maven artifact for
-    // 26.3 on the real RyanHCode Maven above (its "26.3" branch exists and
+    // 26.3 on the real RyanHCode Maven below (its "26.3" branch exists and
     // builds, confirmed via its own CI, but was never run through its
     // manual-trigger release workflow), and a JitPack build of that commit
     // failed too. Falls back to a maven-layout-in-git repo, built and pushed
     // manually from a local machine with real network access - see
     // https://github.com/RATR2/imguimc/tree/maven-repo and the dependency
-    // declarations in common/build.gradle and fabric/build.gradle.
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = "imguimc 26.3 (manually built, hosted as git-raw)"
-                url = "https://raw.githubusercontent.com/RATR2/imguimc/maven-repo/"
-            }
-        }
+    // declarations in common/build.gradle and fabric/build.gradle. Both repos
+    // must be declared in ONE exclusiveContent block (forRepositories), not
+    // two separate ones for the same group - a first attempt at this used two
+    // separate blocks and Gradle silently only honored the first (RyanHCode),
+    // still failing to resolve.
+    exclusiveContent { // ImGuiMC
+        forRepositories(
+                maven {
+                    url = "https://maven.ryanhcode.dev/releases"
+                    name = "RyanHCode Maven"
+                },
+                maven {
+                    name = "imguimc 26.3 (manually built, hosted as git-raw)"
+                    url = "https://raw.githubusercontent.com/RATR2/imguimc/maven-repo/"
+                }
+        )
         filter {
             includeGroup("foundry.imguimc")
         }
